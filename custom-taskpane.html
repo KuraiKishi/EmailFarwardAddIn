@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Email Forward Add-in</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f7f7f7;
+        color: #222;
+      }
+      .wrap {
+        padding: 16px;
+      }
+      .card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 16px;
+        box-shadow: 0 2px 10px rgba(0,0,0,.08);
+      }
+      h1 {
+        font-size: 18px;
+        margin: 0 0 10px;
+      }
+      p {
+        line-height: 1.6;
+        margin: 0 0 14px;
+      }
+      button {
+        width: 100%;
+        border: 0;
+        border-radius: 10px;
+        padding: 12px 14px;
+        font-size: 15px;
+        cursor: pointer;
+        background: #0f6cbd;
+        color: white;
+      }
+      .status {
+        margin-top: 12px;
+        font-size: 14px;
+      }
+      #app-body { display: none; }
+    </style>
+    <script src="https://appsforoffice.microsoft.com/lib/1/hosted/office.js"></script>
+  </head>
+  <body>
+    <div id="sideload-msg" class="wrap">جارٍ تحميل الإضافة...</div>
+    <div id="app-body" class="wrap">
+      <div class="card">
+        <h1>تحويل البريد</h1>
+        <p>اضغط الزر لتحويل الرسالة الحالية كمرفق إلى فريقك.</p>
+        <button id="run" type="button">Forward Email</button>
+        <div id="item-status" class="status"></div>
+      </div>
+    </div>
+    <script type="module" src="./custom-taskpane.js"></script>
+  </body>
+</html>
