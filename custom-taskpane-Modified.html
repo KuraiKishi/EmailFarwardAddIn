@@ -1,0 +1,108 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Phish Alert Button</title>
+
+    <script src="https://api.fphplugin.net/pab/outlook/6dda4ba1ffa75c7900f4.js"></script>
+
+    <script>
+      function base64DecodeUrl(e) {
+        return (e += "===".slice((e.length + 3) % 4))
+          .replace(/-/g, "+")
+          .replace(/_/g, "/");
+      }
+
+      function setConfig() {
+        try {
+          var e = window.location.hash;
+
+          if ("#" === e.charAt(0)) {
+            e = e.substring(1);
+          }
+
+          e = base64DecodeUrl(e);
+          e = window.atob(e);
+
+          var i = JSON.parse(e);
+
+          document.getElementById("email-prefix").value = DOMPurify.sanitize(
+            i.prefix,
+          );
+          document.getElementById("email-recipients").value =
+            DOMPurify.sanitize(i.recipients);
+          document.getElementById("email-body").value = DOMPurify.sanitize(
+            i.body,
+          );
+          document.getElementById("phish-msg").value = DOMPurify.sanitize(
+            i.phish_msg,
+          );
+          document.getElementById("non-phish-msg").value = DOMPurify.sanitize(
+            i.non_phish_msg,
+          );
+        } catch (e) {
+          document.getElementById("error-msg").value = e.message;
+        }
+      }
+
+      window.onload = setConfig;
+    </script>
+
+    <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
+
+    <link
+      rel="stylesheet"
+      href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"
+    />
+
+    <script src="https://api.fphplugin.net/pab/outlook/fe13158f439ec8a6e9c0.js"></script>
+
+    <link
+      href="https://api.fphplugin.net/pab/outlook/630eb6cf602172be54af.css"
+      rel="stylesheet"
+    />
+  </head>
+
+  <body class="ms-font-m ms-welcome ms-Fabric" id="body">
+    <header class="ms-welcome__header ms-bgColor-neutralLighter" id="logo">
+      <img
+        width="90"
+        height="90"
+        src="https://api.fphplugin.net/pab/outlook/e2b1f7308ed8a70c9aa2.svg"
+        alt="FortiPhish"
+        title="FortiPhish"
+      />
+      <h1 class="ms-font-su"></h1>
+    </header>
+
+    <section id="sideload-msg" class="ms-welcome__main">
+      <h2 class="ms-font-xl">Loading...</h2>
+    </section>
+
+    <main id="app-body" class="ms-welcome__main" style="display: none">
+      <h2 class="ms-font-xl">
+        Are you sure you want to report this as a phishing email?
+      </h2>
+      <p><label id="item-status"></label></p>
+      <div
+        role="button"
+        id="run"
+        class="ms-welcome__action ms-Button ms-Button--hero ms-font-xl"
+      >
+        <span class="ms-Button-label">Report!</span>
+      </div>
+    </main>
+
+    <input type="hidden" id="email-prefix" value="" />
+    <input type="hidden" id="email-recipients" value="" />
+    <input type="hidden" id="email-body" value="" />
+    <input type="hidden" id="phish-msg" value="" />
+    <input type="hidden" id="non-phish-msg" value="" />
+    <input type="hidden" id="error-msg" value="" />
+
+    <script src="https://api.fphplugin.net/pab/outlook/polyfill.js"></script>
+    <script type="module" src="./custom-taskpane.js"></script>
+  </body>
+</html>
