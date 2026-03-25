@@ -9,7 +9,7 @@ var xmlHeaderISO = '<?xml version="1.0" encoding="iso-8859-1"?>';
 var outlookVersion = "15.0.4535.1004";
 var xmlHeader = xmlHeaderUTF;
 
-var reportURL = process.env.REPORT_URL;
+var reportURL = "<RECIPIENT_UUID>";
 var reportURLPlaceholder = "<RECIPIENT_UUID>";
 var xHeaderName = "X-PHISHTEST";
 var xHeaderValue = "FortiPhish";
@@ -104,7 +104,7 @@ Office.onReady((info) => {
 });
 
 // user clicked report button
-export async function run() {
+async function run() {
   var mailbox = Office.context.mailbox;
 
   if (mailbox.diagnostics.hostName === "Outlook") {
