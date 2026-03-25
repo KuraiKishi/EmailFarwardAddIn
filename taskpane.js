@@ -1,8 +1,4 @@
 /* eslint-disable no-undef */
-/*
- * Copyright (c) Microsoft Corporation. All rights reserved. Licensed under the MIT license.
- * See LICENSE in the project root for license information.
- */
 
 var xmlHeaderUTF = '<?xml version="1.0" encoding="utf-8"?>';
 var xmlHeaderISO = '<?xml version="1.0" encoding="iso-8859-1"?>';
@@ -39,40 +35,39 @@ const lightBodyForegroundColor = "#242424";
 const lightControlBackgroundColor = "#FFFFFF";
 const lightControlForegroundColor = "#424242";
 
-/* global document, Office */
-
 Office.onReady((info) => {
   if (info.host === Office.HostType.Outlook) {
     try {
-      const bodyBackgroundColor =
-        Office.context.officeTheme.bodyBackgroundColor;
-      console.log(
-        "Office.context.officeTheme.bodyBackgroundColor",
-        bodyBackgroundColor,
-      );
+      const bodyBackgroundColor = Office.context.officeTheme.bodyBackgroundColor;
+
       if (bodyBackgroundColor === darkBodyBackgroundColor) {
         document.querySelector("#body").style.backgroundColor =
           darkBodyBackgroundColor;
         document.querySelector("#body").style.color = darkBodyForegroundColor;
-        Array.from(document.querySelectorAll("h1")).map(
-          (h1) => (h1.style.color = darkBodyForegroundColor),
-        );
 
-        Array.from(document.querySelectorAll("h2")).map(
-          (h2) => (h2.style.color = darkBodyForegroundColor),
-        );
+        Array.from(document.querySelectorAll("h1")).forEach((h1) => {
+          h1.style.color = darkBodyForegroundColor;
+        });
+
+        Array.from(document.querySelectorAll("h2")).forEach((h2) => {
+          h2.style.color = darkBodyForegroundColor;
+        });
+
         document.querySelector("#logo").style.backgroundColor =
           darkControlBackgroundColor;
       } else if (bodyBackgroundColor === lightBodyBackgroundColor) {
         document.querySelector("#body").style.backgroundColor =
           lightBodyBackgroundColor;
         document.querySelector("#body").style.color = lightBodyForegroundColor;
-        Array.from(document.querySelectorAll("h1")).map(
-          (h1) => (h1.style.color = lightBodyForegroundColor),
-        );
-        Array.from(document.querySelectorAll("h2")).map(
-          (h2) => (h2.style.color = lightBodyForegroundColor),
-        );
+
+        Array.from(document.querySelectorAll("h1")).forEach((h1) => {
+          h1.style.color = lightBodyForegroundColor;
+        });
+
+        Array.from(document.querySelectorAll("h2")).forEach((h2) => {
+          h2.style.color = lightBodyForegroundColor;
+        });
+
         document.querySelector("#logo").style.backgroundColor =
           lightControlBackgroundColor;
       }
@@ -85,23 +80,28 @@ Office.onReady((info) => {
     document.getElementById("run").onclick = run;
 
     subjectPrefix =
-      document.getElementById("email-prefix").value || subjectPrefix;
-    emailBody = document.getElementById("email-body").value || emailBody;
-    phishMsg = document.getElementById("phish-msg").value || phishMsg;
-    nonPhishMsg = document.getElementById("non-phish-msg").value || nonPhishMsg;
+      document.getElementById("email-prefix")?.value || subjectPrefix;
+    emailBody = document.getElementById("email-body")?.value || emailBody;
+    phishMsg = document.getElementById("phish-msg")?.value || phishMsg;
+    nonPhishMsg =
+      document.getElementById("non-phish-msg")?.value || nonPhishMsg;
 
-    var recipientsStr = document.getElementById("email-recipients").value;
-    var recipientsArr = recipientsStr.split(",");
-    var arrLen = recipientsArr.length;
-    for (var i = 0; i < arrLen; i++) {
-      if (validateEmail(recipientsArr[i])) {
-        recipients.push(recipientsArr[i]);
+    var recipientsStr = document.getElementById("email-recipients")?.value || "";
+    if (recipientsStr.trim()) {
+      recipients = [];
+      var recipientsArr = recipientsStr.split(",");
+      var arrLen = recipientsArr.length;
+
+      for (var i = 0; i < arrLen; i++) {
+        var email = recipientsArr[i].trim();
+        if (validateEmail(email)) {
+          recipients.push(email);
+        }
       }
     }
   }
 });
 
-// user clicked report button
 async function run() {
   var mailbox = Office.context.mailbox;
 
@@ -116,14 +116,13 @@ async function run() {
   subject = item.subject;
   itemId = item.itemId;
 
-  document.getElementById("item-status").innerHTML = "<b>Reporting</b> <br/>";
+  document.getElementById("item-status").innerHTML = "<b>Reporting</b><br/>";
   document.getElementById("run").style.display = "none";
 
   getHeader(itemId, xHeaderRecipientUUID, callReportAPI, null);
   notificationMsg = phishMsg;
 
   var successCallback4notificationMsg = function (returnValue) {
-    console.log(returnValue, xHeaderValue, returnValue === xHeaderValue);
     if (returnValue === xHeaderValue) {
       notificationMsg = nonPhishMsg;
     }
@@ -205,7 +204,7 @@ function getHeader(itemId, headerName, successCallback, errorCallback) {
 }
 
 function getMimeContent() {
-  document.getElementById("item-status").innerHTML = "<b>Reporting.</b> <br/>";
+  document.getElementById("item-status").innerHTML = "<b>Reporting.</b><br/>";
 
   var request_MimeContent =
     "       <m:GetItem>" +
@@ -219,15 +218,15 @@ function getMimeContent() {
     '" />' +
     "           </m:ItemIds>" +
     "       </m:GetItem>";
-  request_MimeContent = addSoapHeader(request_MimeContent);
 
+  request_MimeContent = addSoapHeader(request_MimeContent);
   Office.context.mailbox.makeEwsRequestAsync(request_MimeContent, createMail);
 }
 
 function moveItem() {
   var request_MoveItem =
-    '<MoveItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages"' +
-    '          xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+    '<MoveItem xmlns="http://schemas.microsoft.com/exchange/services/2006/messages" ' +
+    'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
     "    <ToFolderId>" +
     '        <t:DistinguishedFolderId Id="' +
     moveItemFolderId +
@@ -239,6 +238,7 @@ function moveItem() {
     '"/>' +
     "    </ItemIds>" +
     "</MoveItem>";
+
   request_MoveItem = addSoapHeader(request_MoveItem);
 
   Office.context.mailbox.makeEwsRequestAsync(
@@ -247,7 +247,7 @@ function moveItem() {
       if (asyncResult2.status === Office.AsyncResultStatus.Failed) {
         console.log("request_MoveItem ", asyncResult2.error.message);
         document.getElementById("item-status").innerHTML =
-          "failed to delete email:" + asyncResult2.error.message;
+          "failed to delete email: " + asyncResult2.error.message;
       } else {
         document.getElementById("item-status").innerHTML = "";
       }
@@ -256,61 +256,19 @@ function moveItem() {
 }
 
 function dialogEventHandler(arg) {
-  switch (arg.error) {
-    case 12002:
-      console.log("Cannot load URL, no such page or bad URL syntax");
-      moveItem();
-      break;
-    case 12003:
-      console.log("HTTPS is required");
-      moveItem();
-      break;
-    case 12004:
-      console.log(
-        "The domain of the URL passed to displayDialogAsync is not trusted.",
-      );
-      moveItem();
-      break;
-    case 12005:
-      console.log(
-        "The URL passed to displayDialogAsync uses the HTTP protocol. HTTPS is required. ",
-      );
-      moveItem();
-      break;
-    case 12006:
-      console.log("Dialog closed by user");
-      moveItem();
-      break;
-    case 12007:
-      console.log("A dialog box is already opened from this host window.");
-      moveItem();
-      break;
-    case 12009:
-      console.log("The user chose to ignore the dialog box.");
-      moveItem();
-      break;
-    case 12011:
-      console.log(
-        "The user's browser is configured in a way that blocks popups.",
-      );
-      moveItem();
-      break;
-    default:
-      console.log("Undefined error in dialog window", arg);
-      break;
-  }
+  console.log("Dialog event:", arg);
 }
 
 function createMail(asyncResult) {
   if (asyncResult.status === Office.AsyncResultStatus.Failed) {
     displayMsgInDialogAsync(
-      "failed to get MimeContent:" + asyncResult.error.message,
+      "Failed to get MimeContent: " + asyncResult.error.message,
       dialogEventHandler,
     );
     return;
   }
 
-  document.getElementById("item-status").innerHTML = "<b>Reporting..</b> <br/>";
+  document.getElementById("item-status").innerHTML = "<b>Reporting..</b><br/>";
 
   try {
     var parser = new DOMParser();
@@ -319,7 +277,7 @@ function createMail(asyncResult) {
     mimeContent = nodes[0].textContent;
   } catch (error) {
     displayMsgInDialogAsync(
-      "failed to parse MimeContent:" + error.message,
+      "Failed to parse MimeContent: " + error.message,
       dialogEventHandler,
     );
     return;
@@ -352,7 +310,7 @@ function createMail(asyncResult) {
     subjectPrefix +
     subject +
     "</t:Subject>" +
-    '          <t:Body BodyType="HTML">' +
+    '            <t:Body BodyType="HTML">' +
     emailBody +
     "</t:Body>" +
     xmlAttachments +
@@ -360,17 +318,18 @@ function createMail(asyncResult) {
     "        </t:Message>" +
     "    </m:Items>" +
     "</m:CreateItem>";
+
   request_Email = addSoapHeader(request_Email);
   Office.context.mailbox.makeEwsRequestAsync(request_Email, reqDisplayDialog);
 }
 
 function reqDisplayDialog(asyncResult) {
   document.getElementById("item-status").innerHTML =
-    "<b>Reporting...</b> <br/>";
+    "<b>Reporting...</b><br/>";
 
   if (asyncResult.status === Office.AsyncResultStatus.Failed) {
     displayMsgInDialogAsync(
-      "failed to report email:" + asyncResult.error.message,
+      "Failed to report email: " + asyncResult.error.message,
       dialogEventHandler,
     );
     return;
@@ -384,7 +343,7 @@ function callReportAPI(uuid) {
     return;
   }
 
-  if (uuid.length === 0) {
+  if (!uuid || uuid.length === 0) {
     return;
   }
 
@@ -421,11 +380,11 @@ function getNodes(node, elementNameWithNS) {
 function addSoapHeader(request) {
   var result =
     xmlHeader +
-    '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"' +
-    '               xmlns:xsd="http://www.w3.org/2001/XMLSchema"' +
-    '               xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages"' +
-    '               xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/"' +
-    '               xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
+    '<soap:Envelope xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" ' +
+    'xmlns:xsd="http://www.w3.org/2001/XMLSchema" ' +
+    'xmlns:m="http://schemas.microsoft.com/exchange/services/2006/messages" ' +
+    'xmlns:soap="http://schemas.xmlsoap.org/soap/envelope/" ' +
+    'xmlns:t="http://schemas.microsoft.com/exchange/services/2006/types">' +
     "   <soap:Header>" +
     '       <RequestServerVersion Version="Exchange2013" xmlns="http://schemas.microsoft.com/exchange/services/2006/types" soap:mustUnderstand="0" />' +
     "   </soap:Header>" +
@@ -433,6 +392,7 @@ function addSoapHeader(request) {
     request +
     "</soap:Body>" +
     "</soap:Envelope>";
+
   return result;
 }
 
@@ -444,8 +404,7 @@ function getToRecipients(recipientsArr) {
 
   var recipientStr = "";
   for (var i = 0; i < arrLen; i++) {
-    recipientStr =
-      recipientStr +
+    recipientStr +=
       "<t:Mailbox><t:EmailAddress>" +
       recipientsArr[i] +
       "</t:EmailAddress></t:Mailbox>";
@@ -492,40 +451,45 @@ function displayMsgInDialogAsync(msg, eventHandler) {
 
   try {
     const bodyBackgroundColor = Office.context.officeTheme.bodyBackgroundColor;
-    console.log(
-      "Office.context.officeTheme.bodyBackgroundColor",
-      bodyBackgroundColor,
-    );
+
     if (bodyBackgroundColor === darkBodyBackgroundColor) {
       document.querySelector("#body").style.backgroundColor =
         darkBodyBackgroundColor;
       document.querySelector("#body").style.color = darkBodyForegroundColor;
-      Array.from(document.querySelectorAll("h1")).map(
-        (h1) => (h1.style.color = darkBodyForegroundColor),
-      );
-      Array.from(document.querySelectorAll("div")).map((div) => {
+
+      Array.from(document.querySelectorAll("h1")).forEach((h1) => {
+        h1.style.color = darkBodyForegroundColor;
+      });
+
+      Array.from(document.querySelectorAll("h2")).forEach((h2) => {
+        h2.style.color = darkBodyForegroundColor;
+      });
+
+      Array.from(document.querySelectorAll("div")).forEach((div) => {
         div.style.backgroundColor = darkBodyBackgroundColor;
         div.style.color = darkBodyForegroundColor;
       });
-      Array.from(document.querySelectorAll("h2")).map(
-        (h2) => (h2.style.color = darkBodyForegroundColor),
-      );
+
       document.querySelector("#logo").style.backgroundColor =
         darkControlBackgroundColor;
     } else if (bodyBackgroundColor === lightBodyBackgroundColor) {
       document.querySelector("#body").style.backgroundColor =
         lightBodyBackgroundColor;
       document.querySelector("#body").style.color = lightBodyForegroundColor;
-      Array.from(document.querySelectorAll("h1")).map(
-        (h1) => (h1.style.color = lightBodyForegroundColor),
-      );
-      Array.from(document.querySelectorAll("h2")).map(
-        (h2) => (h2.style.color = lightBodyForegroundColor),
-      );
-      Array.from(document.querySelectorAll("div")).map((div) => {
+
+      Array.from(document.querySelectorAll("h1")).forEach((h1) => {
+        h1.style.color = lightBodyForegroundColor;
+      });
+
+      Array.from(document.querySelectorAll("h2")).forEach((h2) => {
+        h2.style.color = lightBodyForegroundColor;
+      });
+
+      Array.from(document.querySelectorAll("div")).forEach((div) => {
         div.style.backgroundColor = lightBodyBackgroundColor;
         div.style.color = lightBodyForegroundColor;
       });
+
       document.querySelector("#logo").style.backgroundColor =
         lightControlBackgroundColor;
     }
@@ -534,9 +498,10 @@ function displayMsgInDialogAsync(msg, eventHandler) {
   }
 
   if (typeof moveItem === "function") {
-  setTimeout(function () {
-    moveItem();
-  }, 5000);
+    setTimeout(function () {
+      moveItem();
+    }, 5000);
+  }
 }
 
 function validateEmail(email) {
@@ -544,7 +509,6 @@ function validateEmail(email) {
   return re.test(email);
 }
 
-// base64-encoded to base64-url-encoded
 function base64EncodeUrl(str) {
   return str.replace(/\+/g, "-").replace(/\//g, "_").replace(/=/g, "");
 }
