@@ -425,14 +425,6 @@ function displayMsgInDialogAsync(msg, eventHandler) {
 
   if (appBody) {
     appBody.innerHTML = `
-      <img
-        src="https://api.fphplugin.net/pab/outlook/e2b1f7308ed8a70c9aa2.svg"
-        alt="FortiPhish"
-        title="FortiPhish"
-        width="90"
-        height="90"
-        style="margin-bottom:20px;"
-      />
       <h2 class="ms-font-xxl" style="margin:0 0 12px;">Thank you!</h2>
       <p
         class="ms-font-l"
