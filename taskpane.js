@@ -94,8 +94,9 @@ Office.onReady((info) => {
     var recipientsArr = recipientsStr.split(",");
     var arrLen = recipientsArr.length;
     for (var i = 0; i < arrLen; i++) {
-      if (validateEmail(recipientsArr[i])) {
-        recipients.push(recipientsArr[i]);
+      var email = recipientsArr[i].trim();
+      if (validateEmail(email)) {
+        recipients.push(email);
       }
     }
   }
@@ -534,8 +535,9 @@ function displayMsgInDialogAsync(msg, eventHandler) {
   }
 
   if (typeof moveItem === "function") {
+  setTimeout(function () {
     moveItem();
-  }
+  }, 3000);
 }
 
 function validateEmail(email) {
