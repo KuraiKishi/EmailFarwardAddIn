@@ -49,10 +49,8 @@ Office.onReady((info) => {
       console.log(
         "Office.context.officeTheme.bodyBackgroundColor",
         bodyBackgroundColor,
-      ); // for debug
+      );
       if (bodyBackgroundColor === darkBodyBackgroundColor) {
-        // Outlook dark theme
-
         document.querySelector("#body").style.backgroundColor =
           darkBodyBackgroundColor;
         document.querySelector("#body").style.color = darkBodyForegroundColor;
@@ -66,7 +64,6 @@ Office.onReady((info) => {
         document.querySelector("#logo").style.backgroundColor =
           darkControlBackgroundColor;
       } else if (bodyBackgroundColor === lightBodyBackgroundColor) {
-        // Outlook light theme
         document.querySelector("#body").style.backgroundColor =
           lightBodyBackgroundColor;
         document.querySelector("#body").style.color = lightBodyForegroundColor;
@@ -82,6 +79,7 @@ Office.onReady((info) => {
     } catch (err) {
       console.log("Office.context.officeTheme not available", err);
     }
+
     document.getElementById("sideload-msg").style.display = "none";
     document.getElementById("app-body").style.display = "flex";
     document.getElementById("run").onclick = run;
@@ -109,26 +107,19 @@ async function run() {
 
   if (mailbox.diagnostics.hostName === "Outlook") {
     if (mailbox.diagnostics.hostVersion < outlookVersion) {
-      xmlHeader = xmlHeaderISO; // backward compatibility headers
+      xmlHeader = xmlHeaderISO;
     }
   }
 
-  // Get reference to current message
   var item = mailbox.item;
 
-  // Set subject
   subject = item.subject;
-
-  // Get current selected mail message Id
   itemId = item.itemId;
 
-  // Update status
   document.getElementById("item-status").innerHTML = "<b>Reporting</b> <br/>";
   document.getElementById("run").style.display = "none";
 
-  // call report API
   getHeader(itemId, xHeaderRecipientUUID, callReportAPI, null);
-  // set default value [dialog message]
   notificationMsg = phishMsg;
 
   var successCallback4notificationMsg = function (returnValue) {
@@ -138,12 +129,12 @@ async function run() {
     }
     getMimeContent();
   };
+
   var errorCallback4notificationMsg = function (err) {
     console.log(err);
     getMimeContent();
   };
 
-  // Get x-header from current selected mail message
   getHeader(
     itemId,
     xHeaderName,
@@ -185,7 +176,6 @@ function getHeader(itemId, headerName, successCallback, errorCallback) {
 
     var returnValue = "";
     try {
-      // Get Header
       var parser = new DOMParser();
       var xmlDoc = parser.parseFromString(asyncResult.value, "text/xml");
 
@@ -215,10 +205,8 @@ function getHeader(itemId, headerName, successCallback, errorCallback) {
 }
 
 function getMimeContent() {
-  // step 1
   document.getElementById("item-status").innerHTML = "<b>Reporting.</b> <br/>";
 
-  // Get Mime content from current selected mail message
   var request_MimeContent =
     "       <m:GetItem>" +
     "           <m:ItemShape>" +
@@ -268,8 +256,6 @@ function moveItem() {
 }
 
 function dialogEventHandler(arg) {
-  // https://learn.microsoft.com/en-us/office/dev/add-ins/reference/javascript-api-for-office-error-codes
-
   switch (arg.error) {
     case 12002:
       console.log("Cannot load URL, no such page or bad URL syntax");
@@ -292,7 +278,6 @@ function dialogEventHandler(arg) {
       moveItem();
       break;
     case 12006:
-      // The dialog was closed, typically because user pressed X button
       console.log("Dialog closed by user");
       moveItem();
       break;
@@ -324,11 +309,10 @@ function createMail(asyncResult) {
     );
     return;
   }
-  // step 2
+
   document.getElementById("item-status").innerHTML = "<b>Reporting..</b> <br/>";
 
   try {
-    // Get MimeContent
     var parser = new DOMParser();
     var xmlDoc = parser.parseFromString(asyncResult.value, "text/xml");
     var nodes = getNodes(xmlDoc, "t:MimeContent");
@@ -381,7 +365,6 @@ function createMail(asyncResult) {
 }
 
 function reqDisplayDialog(asyncResult) {
-  // step 3
   document.getElementById("item-status").innerHTML =
     "<b>Reporting...</b> <br/>";
 
@@ -393,7 +376,6 @@ function reqDisplayDialog(asyncResult) {
     return;
   }
 
-  // show popup notification here
   displayMsgInDialogAsync(notificationMsg, dialogEventHandler);
 }
 
@@ -413,10 +395,8 @@ function callReportAPI(uuid) {
     if (xhr.readyState === 4) {
       var status = xhr.status;
       if (status >= 200 && status < 400) {
-        // console.log(xhr.responseText);
         document.getElementById("error-msg").value = "OK";
       } else {
-        // error
         document.getElementById("error-msg").value =
           xhr.statusText + "<-_->" + xhr.responseText;
       }
@@ -475,36 +455,48 @@ function getToRecipients(recipientsArr) {
 }
 
 function displayMsgInDialogAsync(msg, eventHandler) {
-  var encoded = window.btoa(msg);
-  encoded = base64EncodeUrl(encoded);
-
-  // clear text
   document.getElementById("item-status").innerHTML = "<br/>";
 
-  Office.context.ui.displayDialogAsync(
-    "https://kuraikishi.github.io/EmailFarwardAddIn/thanks.html#" + encoded,  
-    { height: 60, width: 40, displayInIframe: false },
-    function (asyncResult) {
-      if (asyncResult.status === Office.AsyncResultStatus.Failed) {
-        eventHandler({ error: asyncResult.error.code });
-        return;
-      }
-      const dialog = asyncResult.value;
-      dialog.addEventHandler(
-        Office.EventType.DialogEventReceived,
-        eventHandler,
-      );
-    },
-  );
+  const sideloadMsg = document.getElementById("sideload-msg");
+  const appBody = document.getElementById("app-body");
+
+  if (sideloadMsg) {
+    sideloadMsg.style.display = "none";
+  }
+
+  if (appBody) {
+    appBody.innerHTML = `
+      <img
+        src="https://api.fphplugin.net/pab/outlook/e2b1f7308ed8a70c9aa2.svg"
+        alt="FortiPhish"
+        title="FortiPhish"
+        width="90"
+        height="90"
+        style="margin-bottom:20px;"
+      />
+      <h2 class="ms-font-xxl" style="margin:0 0 12px;">Thank you!</h2>
+      <p
+        class="ms-font-l"
+        style="line-height:1.7; word-break:break-word; margin:0; max-width:320px;"
+      >
+        ${msg}
+      </p>
+    `;
+
+    appBody.style.display = "flex";
+    appBody.style.flexDirection = "column";
+    appBody.style.alignItems = "center";
+    appBody.style.justifyContent = "center";
+    appBody.style.textAlign = "center";
+  }
+
   try {
     const bodyBackgroundColor = Office.context.officeTheme.bodyBackgroundColor;
     console.log(
       "Office.context.officeTheme.bodyBackgroundColor",
       bodyBackgroundColor,
-    ); // for debug
+    );
     if (bodyBackgroundColor === darkBodyBackgroundColor) {
-      // Outlook dark theme
-
       document.querySelector("#body").style.backgroundColor =
         darkBodyBackgroundColor;
       document.querySelector("#body").style.color = darkBodyForegroundColor;
@@ -521,7 +513,6 @@ function displayMsgInDialogAsync(msg, eventHandler) {
       document.querySelector("#logo").style.backgroundColor =
         darkControlBackgroundColor;
     } else if (bodyBackgroundColor === lightBodyBackgroundColor) {
-      // Outlook light theme
       document.querySelector("#body").style.backgroundColor =
         lightBodyBackgroundColor;
       document.querySelector("#body").style.color = lightBodyForegroundColor;
@@ -540,6 +531,10 @@ function displayMsgInDialogAsync(msg, eventHandler) {
     }
   } catch (err) {
     console.log("Office.context.officeTheme not available", err);
+  }
+
+  if (typeof moveItem === "function") {
+    moveItem();
   }
 }
 
