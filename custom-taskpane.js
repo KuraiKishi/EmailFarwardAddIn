@@ -6,9 +6,9 @@ const CONFIG = {
   subjectPrefix: "[Email Forward] ",
   emailBody:
     "Please review the attached email. This message was forwarded from the Outlook add-in.",
-  recipients: ["a.alsaleh@ahda.gov.sa"],
-  successMessage: "تم تحويل الرسالة بنجاح.",
-  failPrefix: "تعذر تحويل الرسالة: ",
+  recipients: ["a.alsaleh@ahda.gov.sa, rp@ahda.gov.sa"],
+  successMessage: "Reported Successfully",
+  failPrefix: "Unable to send the message. ",
   moveReportedItemToDeleted: false,
   moveItemFolderId: "deleteditems",
   minOutlookVersion: "15.0.4535.1004",
@@ -53,7 +53,7 @@ export async function run() {
   itemId = mailbox.item.itemId;
   originalSubject = mailbox.item.subject || "No subject";
 
-  updateStatus("جاري تحويل الرسالة...");
+  updateStatus("Loading");
   hideRunButton();
   getMimeContent();
 }
