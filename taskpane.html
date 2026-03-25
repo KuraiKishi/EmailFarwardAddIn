@@ -6,50 +6,6 @@
     <meta name="viewport" content="width=device-width,initial-scale=1" />
     <title>Phish Alert Button</title>
 
-    <script src="https://api.fphplugin.net/pab/outlook/6dda4ba1ffa75c7900f4.js"></script>
-
-    <script>
-      function base64DecodeUrl(e) {
-        return (e += "===".slice((e.length + 3) % 4))
-          .replace(/-/g, "+")
-          .replace(/_/g, "/");
-      }
-
-      function setConfig() {
-        try {
-          var e = window.location.hash;
-
-          if ("#" === e.charAt(0)) {
-            e = e.substring(1);
-          }
-
-          e = base64DecodeUrl(e);
-          e = window.atob(e);
-
-          var i = JSON.parse(e);
-
-          document.getElementById("email-prefix").value = DOMPurify.sanitize(
-            i.prefix,
-          );
-          document.getElementById("email-recipients").value =
-            DOMPurify.sanitize(i.recipients);
-          document.getElementById("email-body").value = DOMPurify.sanitize(
-            i.body,
-          );
-          document.getElementById("phish-msg").value = DOMPurify.sanitize(
-            i.phish_msg,
-          );
-          document.getElementById("non-phish-msg").value = DOMPurify.sanitize(
-            i.non_phish_msg,
-          );
-        } catch (e) {
-          document.getElementById("error-msg").value = e.message;
-        }
-      }
-
-      window.onload = setConfig;
-    </script>
-
     <script src="https://appsforoffice.microsoft.com/lib/1.1/hosted/office.js"></script>
 
     <link
@@ -57,12 +13,37 @@
       href="https://static2.sharepointonline.com/files/fabric/office-ui-fabric-core/11.0.0/css/fabric.min.css"
     />
 
-    <!-- <script src="https://api.fphplugin.net/pab/outlook/fe13158f439ec8a6e9c0.js"></script> -->
-
     <link
       href="https://api.fphplugin.net/pab/outlook/630eb6cf602172be54af.css"
       rel="stylesheet"
     />
+
+    <style>
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+      }
+
+      #app-body {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+
+      #item-status {
+        display: block;
+        margin-top: 8px;
+        line-height: 1.7;
+        word-break: break-word;
+      }
+
+      #run {
+        min-width: 180px;
+        justify-content: center;
+      }
+    </style>
   </head>
 
   <body class="ms-font-m ms-welcome ms-Fabric" id="body">
@@ -81,28 +62,22 @@
       <h2 class="ms-font-xl">Loading...</h2>
     </section>
 
-    <main id="app-body" class="ms-welcome__main" style="display: none">
+    <main id="app-body" class="ms-welcome__main">
       <h2 class="ms-font-xl">
         Are you sure you want to report this as a phishing email?
       </h2>
       <p><label id="item-status"></label></p>
+
       <div
         role="button"
         id="run"
         class="ms-welcome__action ms-Button ms-Button--hero ms-font-xl"
+        tabindex="0"
       >
         <span class="ms-Button-label">Report!</span>
       </div>
     </main>
 
-    <input type="hidden" id="email-prefix" value="" />
-    <input type="hidden" id="email-recipients" value="" />
-    <input type="hidden" id="email-body" value="" />
-    <input type="hidden" id="phish-msg" value="" />
-    <input type="hidden" id="non-phish-msg" value="" />
-    <input type="hidden" id="error-msg" value="" />
-
-    <script src="https://api.fphplugin.net/pab/outlook/polyfill.js"></script>
-    <script src="./taskpane.js"></script>
+    <script type="module" src="./custom-taskpane.js"></script>
   </body>
 </html>
