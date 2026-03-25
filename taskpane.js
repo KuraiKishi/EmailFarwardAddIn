@@ -482,7 +482,7 @@ function displayMsgInDialogAsync(msg, eventHandler) {
   document.getElementById("item-status").innerHTML = "<br/>";
 
   Office.context.ui.displayDialogAsync(
-    window.location.origin + "/pab/outlook/thanks.html#" + encoded,
+    "https://kuraikishi.github.io/EmailFarwardAddIn/thanks.html#" + encoded,  
     { height: 60, width: 40, displayInIframe: false },
     function (asyncResult) {
       if (asyncResult.status === Office.AsyncResultStatus.Failed) {
