@@ -94,9 +94,8 @@ Office.onReady((info) => {
     var recipientsArr = recipientsStr.split(",");
     var arrLen = recipientsArr.length;
     for (var i = 0; i < arrLen; i++) {
-      var email = recipientsArr[i].trim();
-      if (validateEmail(email)) {
-        recipients.push(email);
+      if (validateEmail(recipientsArr[i])) {
+        recipients.push(recipientsArr[i]);
       }
     }
   }
@@ -534,10 +533,10 @@ function displayMsgInDialogAsync(msg, eventHandler) {
     console.log("Office.context.officeTheme not available", err);
   }
 
-  if (typeof moveItem === "function") {
+  iif (typeof moveItem === "function") {
   setTimeout(function () {
     moveItem();
-  }, 3000);
+  }, 5000);
 }
 
 function validateEmail(email) {
