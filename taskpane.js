@@ -533,7 +533,7 @@ function displayMsgInDialogAsync(msg, eventHandler) {
     console.log("Office.context.officeTheme not available", err);
   }
 
-  iif (typeof moveItem === "function") {
+  if (typeof moveItem === "function") {
   setTimeout(function () {
     moveItem();
   }, 5000);
