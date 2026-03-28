@@ -14,7 +14,7 @@ var xHeaderRecipientUUID = "X-FORTIPHISH-RECIPIENT-UUID";
 var itemId = "";
 var mimeContent = "";
 var subject = "Reported Phishing Email";
-var recipients = ["a.alsaleh@ahda.gov.sa", "rp@ahda.gov.sa"];
+var recipients = ["it@ahda.gov.sa", "rp@ahda.gov.sa"];
 var subjectPrefix = "[Phish Alert]";
 var emailBody =
   "I would like to report the email enclosed as a phishing email.";
